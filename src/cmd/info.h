@@ -15,6 +15,6 @@
         "Creation date: %." STRING(ISO_LDATE_LEN) "s\n"         \
         "Application Identifier: %." STRING(ISO_APP_LEN) "s\n"
 
-void info(struct iso *context);
+void info(struct iso *context, int argc, char *argv[]);
 
 #endif /* !CMD_INFO_H_ */
