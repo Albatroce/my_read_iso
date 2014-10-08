@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -Werror -g
+CFLAGS = -std=c99 -pedantic -Wall -Wextra -g
 
-SRCS = main.c iso.c shell.c
-CMDS = info.c
+SRCS = main.c iso.c shell.c strtools.c dir.c
+CMDS = info.c cd.c
 OBJS = ${subst .c,.o,${addprefix src/,$(SRCS)} ${addprefix src/cmd/,$(CMDS)}}
 
 all: my_read_iso
