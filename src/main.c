@@ -2,6 +2,7 @@
 
 #include "iso.h"
 #include "shell.h"
+#include "endian.h"
 
 static int print_usage(char *arg0)
 {

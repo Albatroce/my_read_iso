@@ -5,12 +5,13 @@
 #include <sys/stat.h>
 
 #include "iso.h"
+#include "dir.h"
 
 void iso_load(const char *filename, struct iso *iso)
 {
     int fd = open(filename, O_RDONLY);
     if (fd == -1)
-        return NULL;
+        return;
 
     iso_load_fd(fd, iso);
 }
@@ -28,6 +29,7 @@ void iso_load_fd(int fd, struct iso *iso)
     iso->fd = fd;
     iso->map = iso_map;
     iso->size = stat.st_size;
+    iso->cwd = get_root(iso);
 }
 
 void iso_release(struct iso *iso)
@@ -38,8 +40,5 @@ void iso_release(struct iso *iso)
 
 struct iso_prim_voldesc *iso_describe(struct iso *iso)
 {
-    char *offset = iso->map;
-    offset += ISO_BLOCK_SIZE * ISO_PRIM_VOLDESC_BLOCK;
-    void *primary_block = offset;
-    return primary_block;
+    return iso_sector(iso, ISO_PRIM_VOLDESC_BLOCK);
 }
