@@ -74,26 +74,28 @@ static void swap(char **tab, size_t i, size_t j)
     tab[j] = tmp;
 }
 
-static ssize_t prompt(char *buffer, size_t size)
+static char *prompt(char *buffer, size_t size)
 {
     if (isatty(STDIN_FILENO))
     {
         printf("> ");
         fflush(stdout);
     }
-    return read(STDIN_FILENO, buffer, size);
+    return fgets(buffer, size, stdin);
 }
 
 void run(struct iso *context)
 {
     char cmd[MAX_COMMAND_SIZE + 1];
-    cmd[MAX_COMMAND_SIZE] = 0;
 
-    ssize_t read_b;
-    while (running && (read_b = prompt(cmd, MAX_COMMAND_SIZE)) > 0)
+    while (running && prompt(cmd, MAX_COMMAND_SIZE + 1))
     {
         int argc = 0;
         char *argv[MAX_COMMAND_SIZE];
+
+        ssize_t read_b = 0;
+        for (char *s = cmd; *s; ++s)
+            ++read_b;
 
         char *s = cmd + read_b - 1;
         for (; read_b > 0; --read_b, --s)
