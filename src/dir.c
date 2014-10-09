@@ -55,3 +55,16 @@ struct iso_dir *setcwd(struct iso *context, const char *dir)
     }
     return context->cwd;
 }
+
+void walk(struct iso *context,
+          struct iso_dir *dir,
+          void (*callback)(struct iso_dir *))
+{
+    uint32_t sector = endian32_value(dir->data_blk);
+    struct iso_dir *d;
+    for (d = iso_sector(context, sector);
+         d->dir_size;
+         d = shift(d, d->dir_size))
+        callback(d);
+}
+
