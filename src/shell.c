@@ -7,6 +7,7 @@
 #include "cmd/cd.h"
 #include "cmd/ls.h"
 #include "cmd/get.h"
+#include "cmd/cat.h"
 
 #define ARG_ERROR_FORMAT "my_read_iso: %s: %s\n"
 
@@ -54,6 +55,8 @@ static f_command get_command(const char *cmd)
         return ls;
     if (streq(cmd, "get"))
         return get;
+    if (streq(cmd, "cat"))
+        return cat;
     if (streq(cmd, "quit"))
         return quit;
     return noop;

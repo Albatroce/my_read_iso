@@ -16,7 +16,7 @@ int streq(const char *s1, const char *s2);
  ** @param[in]  s1 The first string
  ** @param[in]  s2 The second string
  ** @param[in] max The maximum length of both strings.
- ** @returns 1 if the first "max" characters in both 
+ ** @returns 1 if the first "max" characters in both
  **          strings are equal; 0 otherwise.
  */
 int streqn(const char *s1, const char *s2, size_t max);
