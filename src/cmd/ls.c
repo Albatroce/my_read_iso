@@ -2,6 +2,8 @@
 
 #include "ls.h"
 #include "../dir.h"
+#include "../shell.h"
+#include "../endian.h"
 
 static size_t realsize(struct iso_dir *dir)
 {
@@ -14,7 +16,7 @@ static size_t realsize(struct iso_dir *dir)
     return len;
 }
 
-void print_file(struct iso_dir *f)
+static void print_file(struct iso_dir *f)
 {
     size_t len = realsize(f);
     char name[len + 1];
@@ -25,10 +27,15 @@ void print_file(struct iso_dir *f)
     for (size_t i = 0; i < len; ++i)
         name[i] = rawname[i];
 
-    printf("%c%c\t%d %s\n", '-', '-', 0, name);
+    printf("%c%c %9u %s\n",
+           (f->type & iso_file_isdir) ? 'd' : '-',
+           (f->type & iso_file_hidden) ? 'h' : '-',
+           endian32_value(f->file_size),
+           name);
 }
 
 void ls(struct iso *context, int argc, char *argv[])
 {
-    walk(context, context->cwd, print_file);
+    if (validate_cmd_args(argv[0], argc - 1, 0))
+        walk(context, context->cwd, print_file);
 }
