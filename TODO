@@ -1,16 +1,18 @@
-[~] iso9660
+[x] iso9660
 	[x] map/unmap
 	[x] primary_block
-	[ ] directories
-	[ ] files
+	[x] directories
+	[x] files
 
-[~] shell
-	[ ] hashtable
-	[~] commands
-		[ ] help
+[x] shell
+	[x] prompt
+	[x] redirection
+	[x] pipe
+	[x] commands
+		[x] help
 		[x] info
-		[ ] cat
-		[ ] ls
-		[ ] cd
-		[ ] get
-		[ ] quit
+		[x] cat
+		[x] ls
+		[x] cd
+		[x] get
+		[x] quit
