@@ -38,6 +38,13 @@ static void noop(struct iso *context, int argc, char *argv[])
     fprintf(stderr, "my_read_iso: %s: unknown command\n", argv[0]);
 }
 
+static void help(struct iso *context, int argc, char *argv[])
+{
+    context += 0;
+    if (validate_cmd_args(argv[0], argc - 1, 0))
+        printf(HELP_STRING);
+}
+
 static void quit(struct iso *context, int argc, char *argv[])
 {
     context += 0;
@@ -57,6 +64,8 @@ static f_command get_command(const char *cmd)
         return get;
     if (streq(cmd, "cat"))
         return cat;
+    if (streq(cmd, "help"))
+        return help;
     if (streq(cmd, "quit"))
         return quit;
     return noop;
