@@ -27,5 +27,5 @@ void cd(struct iso *context, int argc, char *argv[])
 {
     char *dirname = "root dir";
     void *res = setcwd(context, argc < 2 ? NULL : (dirname = argv[1]));
-    printf(get_message(res), dirname);
+    fprintf(res ? stdout : stderr, get_message(res), dirname);
 }

@@ -7,6 +7,8 @@
 #include "cmd/cd.h"
 #include "cmd/ls.h"
 
+#define ARG_ERROR_FORMAT "my_read_iso: %s: command does not take an argument\n"
+
 static int running = 1;
 
 typedef void (*f_command)(struct iso *, int, char *[]);
@@ -14,7 +16,7 @@ typedef void (*f_command)(struct iso *, int, char *[]);
 int validate_cmd_args(const char *name, int actual, int expected)
 {
     if (actual != expected && expected == 0)
-        printf("my_read_iso: %s: command does not take an argument\n", name);
+        fprintf(stderr, ARG_ERROR_FORMAT, name);
     return actual == expected;
 }
 
@@ -24,7 +26,7 @@ static void noop(struct iso *context, int argc, char *argv[])
     argc += 0;
     argv += 0;
 
-    printf("Unknown command %s\n", argv[0]);
+    fprintf(stderr, "my_read_iso: %s: unknown command\n", argv[0]);
 }
 
 static void quit(struct iso *context, int argc, char *argv[])
@@ -61,8 +63,11 @@ static void swap(char **tab, size_t i, size_t j)
 
 static ssize_t prompt(char *buffer, size_t size)
 {
-    printf("> ");
-    fflush(stdout);
+    if (isatty(STDIN_FILENO))
+    {
+        printf("> ");
+        fflush(stdout);
+    }
     return read(STDIN_FILENO, buffer, size);
 }
 
