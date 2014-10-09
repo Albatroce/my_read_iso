@@ -6,8 +6,9 @@
 #include "cmd/info.h"
 #include "cmd/cd.h"
 #include "cmd/ls.h"
+#include "cmd/get.h"
 
-#define ARG_ERROR_FORMAT "my_read_iso: %s: command does not take an argument\n"
+#define ARG_ERROR_FORMAT "my_read_iso: %s: %s\n"
 
 static int running = 1;
 
@@ -15,8 +16,15 @@ typedef void (*f_command)(struct iso *, int, char *[]);
 
 int validate_cmd_args(const char *name, int actual, int expected)
 {
-    if (actual != expected && expected == 0)
-        fprintf(stderr, ARG_ERROR_FORMAT, name);
+    if (actual != expected)
+    {
+        char *message = "";
+        if (expected == 0)
+            message = "command does not take an argument";
+        else if (expected == 1)
+            message = "command requires an argument";
+        fprintf(stderr, ARG_ERROR_FORMAT, name, message);
+    }
     return actual == expected;
 }
 
@@ -44,6 +52,8 @@ static f_command get_command(const char *cmd)
         return cd;
     if (streq(cmd, "ls"))
         return ls;
+    if (streq(cmd, "get"))
+        return get;
     if (streq(cmd, "quit"))
         return quit;
     return noop;

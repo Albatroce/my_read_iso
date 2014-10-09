@@ -56,28 +56,39 @@ static size_t realsize(struct iso_dir *dir)
     return len;
 }
 
+struct iso_dir *get_file(struct iso *context,
+                         struct iso_dir *dir,
+                         const char *filename)
+{
+    uint32_t sector = endian32_value(dir->data_blk);
+    struct iso_dir *d;
+    for (d = iso_sector(context, sector);
+         d->dir_size;
+         d = shift(d, d->dir_size))
+    {
+        char name[d->idf_len + 3];
+        dirname(d, name);
+        if (streqn(name, filename, realsize(d)))
+            break;
+    }
+    if (!d->dir_size)
+    {
+        errno = ENOENT;
+        return NULL;
+    }
+    return d;
+}
+
 struct iso_dir *setcwd(struct iso *context, const char *dir)
 {
     if (!dir)
         context->cwd = get_root(context);
     else
     {
-        uint32_t sector = endian32_value(context->cwd->data_blk);
-        struct iso_dir *d;
-        for (d = iso_sector(context, sector);
-             d->dir_size;
-             d = shift(d, d->dir_size))
-        {
-            char name[d->idf_len + 3];
-            dirname(d, name);
-            if (streqn(name, dir, realsize(d)))
-                break;
-        }
-        if (!d->dir_size)
-        {
-            errno = ENOENT;
+        struct iso_dir *d = get_file(context, context->cwd, dir);
+        if (!d)
             return NULL;
-        }
+
         if (!(d->type & iso_file_isdir))
         {
             errno = ENOTDIR;
