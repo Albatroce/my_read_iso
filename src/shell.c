@@ -5,10 +5,13 @@
 #include "strtools.h"
 #include "cmd/info.h"
 #include "cmd/cd.h"
+#include "cmd/ls.h"
+
+static int running = 1;
 
 typedef void (*f_command)(struct iso *, int, char *[]);
 
-void noop(struct iso *context, int argc, char *argv[])
+static void noop(struct iso *context, int argc, char *argv[])
 {
     context += 0;
     argc += 0;
@@ -17,12 +20,24 @@ void noop(struct iso *context, int argc, char *argv[])
     printf("Unknown command %s", argv[0]);
 }
 
+static void quit(struct iso *context, int argc, char *argv[])
+{
+    context += 0;
+    argc += 0;
+    argv += 0;
+    running = 0;
+}
+
 static f_command get_command(const char *cmd)
 {
     if (streq(cmd, "info"))
         return info;
     if (streq(cmd, "cd"))
-        return info;
+        return cd;
+    if (streq(cmd, "ls"))
+        return ls;
+    if (streq(cmd, "quit"))
+        return quit;
     return noop;
 }
 
@@ -51,7 +66,7 @@ void run(struct iso *context)
     cmd[MAX_COMMAND_SIZE] = 0;
 
     ssize_t read_b;
-    while ((read_b = prompt(cmd, MAX_COMMAND_SIZE)) > 0)
+    while (running && (read_b = prompt(cmd, MAX_COMMAND_SIZE)) > 0)
     {
         int argc = 0;
         char *argv[MAX_COMMAND_SIZE];
