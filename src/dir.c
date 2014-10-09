@@ -15,16 +15,43 @@ static void *shift(void *ptr, size_t shift)
     return offset + shift;
 }
 
-const char *dirname(struct iso_dir *dir)
+static int translate(const char *in, char *out)
 {
-    return shift(dir, sizeof (struct iso_dir));
+    switch (*in)
+    {
+    case 0:
+        out[0] = '.';
+        return 1;
+    case 1:
+        out[0] = '.';
+        out[1] = '.';
+        return 2;
+    default:
+        out[0] = in[0];
+        return 1;
+    }
 }
 
-static size_t realsize(struct iso_dir *dir, size_t s)
+char *dirname(struct iso_dir *dir, char *out)
 {
-    const char *name = dirname(dir);
+    const char *raw = shift(dir, sizeof (struct iso_dir));
+    size_t i = 0;
+    if (dir->idf_len == 1)
+        i = translate(raw, out);
+    else
+        for (; i < dir->idf_len; ++i)
+            out[i] = raw[i];
+    out[i] = '\0';
+    return out;
+}
+
+static size_t realsize(struct iso_dir *dir)
+{
+    size_t s = dir->idf_len + 3;
+    char name[s];
+    dirname(dir, name);
     size_t len = 0;
-    for (; len < s && *name != ';'; ++name, ++len)
+    for (char *str = name; *str && len < s && *str != ';'; ++str, ++len)
         continue;
     return len;
 }
@@ -38,9 +65,14 @@ struct iso_dir *setcwd(struct iso *context, const char *dir)
         uint32_t sector = endian32_value(context->cwd->data_blk);
         struct iso_dir *d;
         for (d = iso_sector(context, sector);
-             d->dir_size && !streqn(dirname(d), dir, realsize(d, d->idf_len));
+             d->dir_size;
              d = shift(d, d->dir_size))
-            continue;
+        {
+            char name[d->idf_len + 3];
+            dirname(d, name);
+            if (streqn(name, dir, realsize(d)))
+                break;
+        }
         if (!d->dir_size)
         {
             errno = ENOENT;
