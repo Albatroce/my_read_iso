@@ -11,21 +11,27 @@ static int running = 1;
 
 typedef void (*f_command)(struct iso *, int, char *[]);
 
+int validate_cmd_args(const char *name, int actual, int expected)
+{
+    if (actual != expected && expected == 0)
+        printf("my_read_iso: %s: command does not take an argument\n", name);
+    return actual == expected;
+}
+
 static void noop(struct iso *context, int argc, char *argv[])
 {
     context += 0;
     argc += 0;
     argv += 0;
 
-    printf("Unknown command %s", argv[0]);
+    printf("Unknown command %s\n", argv[0]);
 }
 
 static void quit(struct iso *context, int argc, char *argv[])
 {
     context += 0;
-    argc += 0;
-    argv += 0;
-    running = 0;
+    if (validate_cmd_args(argv[0], argc - 1, 0))
+        running = 0;
 }
 
 static f_command get_command(const char *cmd)
