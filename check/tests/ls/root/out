@@ -1,6 +1,9 @@
 d-      2048 .
 d-      2048 ..
---        11 AUTHORS.TXT
---         0 NOT_A_DI.
-d-      2048 SUBDIR
---         0 _HIDDEN.
+d-      2048 DIR1
+d-      2048 DIR2
+d-      2048 DIR3
+d-      2048 DIR4
+--        40 EXAMPLE.
+-h        23 HIDDEN.
+--       156 README.TXT

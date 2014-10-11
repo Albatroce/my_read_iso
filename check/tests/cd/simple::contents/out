@@ -1,4 +1,9 @@
-Changing to 'SUBDIR' directory
 d-      2048 .
 d-      2048 ..
---         0 CAT_PICS.JPG
+d-      2048 DIR1
+d-      2048 DIR2
+d-      2048 DIR3
+d-      2048 DIR4
+--        40 EXAMPLE.
+-h        23 HIDDEN.
+--       156 README.TXT
