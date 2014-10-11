@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 
 #include "iso.h"
+#include "strtools.h"
 #include "dir.h"
 
 struct iso *iso_load(const char *filename, struct iso *iso)
@@ -20,18 +21,38 @@ struct iso *iso_load(const char *filename, struct iso *iso)
     return iso_load_fd(fd, iso);
 }
 
+static int validate_iso(struct iso_prim_voldesc *prim)
+{
+    return (prim->vol_desc_type == 1
+         && streqn(prim->std_identifier, "CD001", 5)
+         && prim->vol_desc_version == 1);
+}
+
 struct iso *iso_load_fd(int fd, struct iso *iso)
 {
     struct stat stat;
     if (fstat(fd, &stat) == -1)
         return NULL;
 
-    void *iso_map = mmap(NULL, stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    size_t size = stat.st_size;
+    if (size < 0x8000 + sizeof (struct iso_prim_voldesc))
+    {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    void *iso_map = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (iso_map == MAP_FAILED)
         return NULL;
 
-    iso->fd = fd;
     iso->map = iso_map;
+    if (!validate_iso(iso_describe(iso)))
+    {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    iso->fd = fd;
     iso->size = stat.st_size;
     iso->cwd = get_root(iso);
     return iso;
