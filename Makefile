@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -pedantic -Wall -Wextra -g
+CFLAGS = -std=c99 -pedantic -Wall -Wextra
 
 SRCS = main.c iso.c shell.c strtools.c dir.c
 CMDS = info.c cd.c ls.c get.c cat.c

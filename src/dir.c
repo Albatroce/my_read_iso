@@ -110,4 +110,3 @@ void walk(struct iso *context,
          d = shift(d, d->dir_size))
         callback(d);
 }
-
