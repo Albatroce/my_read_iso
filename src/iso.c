@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -7,29 +8,33 @@
 #include "iso.h"
 #include "dir.h"
 
-void iso_load(const char *filename, struct iso *iso)
+struct iso *iso_load(const char *filename, struct iso *iso)
 {
     int fd = open(filename, O_RDONLY);
     if (fd == -1)
-        return;
+    {
+        errno = ENOENT;
+        return NULL;
+    }
 
-    iso_load_fd(fd, iso);
+    return iso_load_fd(fd, iso);
 }
 
-void iso_load_fd(int fd, struct iso *iso)
+struct iso *iso_load_fd(int fd, struct iso *iso)
 {
     struct stat stat;
     if (fstat(fd, &stat) == -1)
-        return;
+        return NULL;
 
     void *iso_map = mmap(NULL, stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (iso_map == MAP_FAILED)
-        return;
+        return NULL;
 
     iso->fd = fd;
     iso->map = iso_map;
     iso->size = stat.st_size;
     iso->cwd = get_root(iso);
+    return iso;
 }
 
 void iso_release(struct iso *iso)

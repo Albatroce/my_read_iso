@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 #include "iso.h"
 #include "shell.h"
@@ -16,7 +18,11 @@ int main(int argc, char *argv[])
         return print_usage(argv[0]);
 
     struct iso iso;
-    iso_load(argv[1], &iso);
+    if (!iso_load(argv[1], &iso))
+    {
+        fprintf(stderr, "my_read_iso: %s: %s\n", argv[1], strerror(errno));
+        return 1;
+    }
 
     run(&iso);
 

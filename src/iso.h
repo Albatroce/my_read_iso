@@ -12,8 +12,8 @@ struct iso
     struct iso_dir *cwd;
 };
 
-void iso_load(const char *filename, struct iso *iso);
-void iso_load_fd(int fd, struct iso *iso);
+struct iso *iso_load(const char *filename, struct iso *iso);
+struct iso *iso_load_fd(int fd, struct iso *iso);
 void iso_release(struct iso *iso);
 struct iso_prim_voldesc *iso_describe(struct iso *iso);
 
