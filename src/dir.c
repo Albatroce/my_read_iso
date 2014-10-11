@@ -68,7 +68,11 @@ struct iso_dir *get_file(struct iso *context,
     {
         char name[d->idf_len + 3];
         dirname(d, name);
-        if (streqn(name, filename, realsize(d)))
+        size_t size = realsize(d);
+        size_t param_len = 0;
+        for (const char *s = filename; *s; ++s)
+            ++param_len;
+        if (size == param_len && streqn(name, filename, realsize(d)))
             break;
     }
     if (!d->dir_size)
