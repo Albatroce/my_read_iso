@@ -1,12 +1,13 @@
 #include <stdio.h>
 
 #include "../endian.h"
+#include "../shell.h"
 #include "info.h"
 
 void info(struct iso *context, int argc, char *argv[])
 {
-    argc += 0;
-    argv[0] += 0;
+    if (!validate_cmd_args(argv[0], argc - 1, 0))
+        return;
 
     struct iso_prim_voldesc *desc = iso_describe(context);
     printf(OUTPUT,
