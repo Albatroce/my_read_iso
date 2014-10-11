@@ -10,5 +10,14 @@ all: my_read_iso
 my_read_iso: $(OBJS)
 	$(LINK.o) -o $@ $^
 
+check/test.iso:
+	mkisofs -o $@ check/iso_fs/
+
+check: TEST_BIN = ./my_read_iso
+check: my_read_iso check/test.iso
+	python ./check/test.py $(TEST_BIN)
+
 clean:
 	$(RM) $(OBJS)
+
+.PHONY: clean check all

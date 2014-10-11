@@ -1,0 +1,7 @@
+help	: display command help
+info	: display volume info
+ls	: display directory content
+cd	: change current directory
+get	: copy file to local directory
+cat	: display file content
+quit	: program exit
